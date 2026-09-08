@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_small_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_widget_quick_action_bg"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <!-- Top Card with formatted amount e.g. Rp 12.5 Juta -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_widget_quick_action_white_card"
+        android:gravity="center_vertical"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_widget_small_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Semua Tabungan"
+            android:textColor="#4338CA"
+            android:textSize="10.5sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tv_widget_small_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rp 12.5 Juta"
+            android:textColor="#064E3B"
+            android:textSize="16.5sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-black"
+            android:maxLines="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+
+    <!-- Bottom Row: 2 Big Square Buttons: [+ Setor] [- Tarik] -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.4"
+        android:orientation="horizontal">
+
+        <!-- Square + Setor -->
+        <LinearLayout
+            android:id="@+id/btn_widget_small_deposit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_widget_sq_deposit"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_widget_plus_white"
+                android:contentDescription="Plus Icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Setor"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Square - Tarik -->
+        <LinearLayout
+            android:id="@+id/btn_widget_small_withdraw"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_widget_sq_withdraw"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_widget_minus_white"
+                android:contentDescription="Minus Icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Tarik"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
