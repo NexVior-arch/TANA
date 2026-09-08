@@ -1,0 +1,211 @@
+
+                // Messages List
+                Box(modifier = Modifier.weight(1f)) {
+                    if (aiMessages.isEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Psychology,
+                                contentDescription = null,
+                                modifier = Modifier.size(64.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Halo! Saya FinMonochrome AI.\nKetik atau ucapkan sesuatu untuk mulai.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+
+                    LazyColumn(
+                        state = listState,
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                        contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(aiMessages, key = { it.id }) { msg ->
+                            val rawContent = msg.content
+                            val isUser = msg.role == "user"
+
+                            val tagGoalRegex = Regex("""\[TARGET_NABUNG(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""")
+                            val tagDepositRegex = Regex("""\[SETOR_TABUNGAN(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""")
+                            val tagTransactionRegex = Regex("""\[CATAT_TRANSAKSI(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""")
+
+                            val matchGoal = tagGoalRegex.find(rawContent)
+                            val matchDeposit = tagDepositRegex.find(rawContent)
+                            val matchTrans = tagTransactionRegex.find(rawContent)
+
+                            var cleanContent = rawContent
+                            if (matchGoal != null) cleanContent = cleanContent.replace(matchGoal.value, "")
+                            if (matchDeposit != null) cleanContent = cleanContent.replace(matchDeposit.value, "")
+                            if (matchTrans != null) cleanContent = cleanContent.replace(matchTrans.value, "")
+                            cleanContent = cleanContent.trim()
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth().animateItem(),
+                                horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+                            ) {
+                                Surface(
+                                    color = if (isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+                                    shape = RoundedCornerShape(
+                                        topStart = 16.dp,
+                                        topEnd = 16.dp,
+                                        bottomStart = if (isUser) 16.dp else 4.dp,
+                                        bottomEnd = if (isUser) 4.dp else 16.dp
+                                    ),
+                                    border = if (!isUser) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
+                                    modifier = Modifier.fillMaxWidth(0.85f)
+                                ) {
+                                    Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+                                        if (cleanContent.isNotBlank()) {
+                                            com.example.ui.components.TypewriterText(
+                                                text = cleanContent,
+                                                isAi = !isUser,
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    lineHeight = 21.sp,
+                                                    fontSize = 13.5.sp,
+                                                    fontFamily = androidx.compose.ui.text.font.FontFamily.SansSerif
+                                                ),
+                                                modifier = Modifier.padding(bottom = 8.dp)
+                                            )
+                                        }
+
+                                        // Render Action Cards
+                                        if (!isUser && matchDeposit != null && onDepositFromAi != null) {
+                                            val depositStatus = matchDeposit.groupValues[1]
+                                            val depositGoalName = matchDeposit.groupValues[2].trim()
+                                            val depositAmt = matchDeposit.groupValues[3].replace(Regex("[^0-9]"), "").toDoubleOrNull() ?: 50000.0
+                                            val depositNote = matchDeposit.groupValues[4].trim()
+
+                                            val isDepositSaved = savedDepositMessageIds[msg.id] == true || depositStatus == "_DONE"
+                                            val isDepositCancelled = cancelledDepositMessageIds[msg.id] == true || depositStatus == "_CANCEL"
+
+                                            ActionPlanCard(
+                                                actionName = "SETORAN_TABUNGAN",
+                                                actionPayload = """{"target": "$depositGoalName", "nominal": $depositAmt, "catatan": "$depositNote"}""",
+                                                isSaved = isDepositSaved,
+                                                isCancelled = isDepositCancelled,
+                                                onExecute = {
+                                                    onDepositFromAi(depositGoalName, depositAmt, depositNote)
+                                                    savedDepositMessageIds[msg.id] = true
+                                                    onUpdateAiMessageContent?.invoke(msg.id, msg.content.replace("[SETOR_TABUNGAN:", "[SETOR_TABUNGAN_DONE:"))
+                                                },
+                                                onCancel = {
+                                                    cancelledDepositMessageIds[msg.id] = true
+                                                    onUpdateAiMessageContent?.invoke(msg.id, msg.content.replace("[SETOR_TABUNGAN:", "[SETOR_TABUNGAN_CANCEL:"))
+                                                }
+                                            )
+                                        }
+
+                                        if (!isUser && matchTrans != null && onAddTransactionFromAi != null) {
+                                            val transStatus = matchTrans.groupValues[1]
+                                            val transTypeStr = matchTrans.groupValues[2].trim().uppercase()
+                                            val transAmt = matchTrans.groupValues[3].replace(Regex("[^0-9]"), "").toDoubleOrNull() ?: 25000.0
+                                            val transCategory = matchTrans.groupValues[4].trim()
+                                            val transNote = matchTrans.groupValues[5].trim()
+
+                                            val transTypeEnum = when {
+                                                transTypeStr.contains("INCOME") || transTypeStr.contains("PEMASUKAN") -> com.example.data.model.TransactionType.INCOME
+                                                transTypeStr.contains("SAVINGS") || transTypeStr.contains("TABUNGAN") -> com.example.data.model.TransactionType.SAVINGS
+                                                else -> com.example.data.model.TransactionType.EXPENSE
+                                            }
+
+                                            val isTransSaved = savedTransactionMessageIds[msg.id] == true || transStatus == "_DONE"
+                                            val isTransCancelled = cancelledTransactionMessageIds[msg.id] == true || transStatus == "_CANCEL"
+
+                                            ActionPlanCard(
+                                                actionName = "CATAT_TRANSAKSI",
+                                                actionPayload = """{"tipe": "$transTypeStr", "nominal": $transAmt, "kategori": "$transCategory"}""",
+                                                isSaved = isTransSaved,
+                                                isCancelled = isTransCancelled,
+                                                onExecute = {
+                                                    onAddTransactionFromAi(transTypeEnum, transAmt, transCategory, transNote)
+                                                    savedTransactionMessageIds[msg.id] = true
+                                                    onUpdateAiMessageContent?.invoke(msg.id, msg.content.replace("[CATAT_TRANSAKSI:", "[CATAT_TRANSAKSI_DONE:"))
+                                                },
+                                                onCancel = {
+                                                    cancelledTransactionMessageIds[msg.id] = true
+                                                    onUpdateAiMessageContent?.invoke(msg.id, msg.content.replace("[CATAT_TRANSAKSI:", "[CATAT_TRANSAKSI_CANCEL:"))
+                                                }
+                                            )
+                                        }
+
+                                        if (!isUser && matchGoal != null && onAddGoalFromAi != null) {
+                                            val goalStatus = matchGoal.groupValues[1]
+                                            val goalTitle = matchGoal.groupValues[2].trim()
+                                            val goalTarget = matchGoal.groupValues[3].replace(Regex("[^0-9]"), "").toDoubleOrNull() ?: 1000000.0
+                                            val goalPlanAmt = matchGoal.groupValues[4].replace(Regex("[^0-9]"), "").toDoubleOrNull() ?: 20000.0
+                                            val goalFreq = matchGoal.groupValues[5].trim().uppercase()
+
+                                            val isAlreadySaved = savedGoalMessageIds[msg.id] == true || goalStatus == "_DONE"
+                                            val isGoalCancelled = cancelledGoalMessageIds[msg.id] == true || goalStatus == "_CANCEL"
+
+                                            ActionPlanCard(
+                                                actionName = "TARGET_NABUNG",
+                                                actionPayload = """{"nama": "$goalTitle", "target": $goalTarget, "setoran": $goalPlanAmt, "freq": "$goalFreq"}""",
+                                                isSaved = isAlreadySaved,
+                                                isCancelled = isGoalCancelled,
+                                                onExecute = {
+                                                    onAddGoalFromAi(
+                                                        goalTitle,
+                                                        goalTarget,
+                                                        0.0,
+                                                        goalPlanAmt,
+                                                        goalFreq,
+                                                        setOf(2, 3, 4, 5, 6, 7, 1),
+                                                        "20:00",
+                                                        "Dibuat otomatis dari saran AI FinMonochrome"
+                                                    )
+                                                    savedGoalMessageIds[msg.id] = true
+                                                    onUpdateAiMessageContent?.invoke(msg.id, msg.content.replace("[TARGET_NABUNG:", "[TARGET_NABUNG_DONE:"))
+                                                },
+                                                onCancel = {
+                                                    cancelledGoalMessageIds[msg.id] = true
+                                                    onUpdateAiMessageContent?.invoke(msg.id, msg.content.replace("[TARGET_NABUNG:", "[TARGET_NABUNG_CANCEL:"))
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (isAiLoading) {
+                            item {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().animateItem(),
+                                    horizontalArrangement = Arrangement.Start
+                                ) {
+                                    Surface(
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 4.dp, bottomEnd = 16.dp),
+                                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            CircularProgressIndicator(
+                                                modifier = Modifier.size(14.dp),
+                                                strokeWidth = 2.dp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                            Text(
+                                                text = "Sedang berpikir...",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
