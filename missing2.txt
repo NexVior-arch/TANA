@@ -1,0 +1,270 @@
+
+                // Attachment Preview Bar
+                AnimatedVisibility(visible = attachedMediaName != null) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                                if (attachedImageUri != null) {
+                                    coil.compose.AsyncImage(
+                                        model = attachedImageUri,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(4.dp))
+                                            .padding(2.dp),
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                    )
+                                } else if (attachedImageBitmap != null) {
+                                    androidx.compose.foundation.Image(
+                                        bitmap = attachedImageBitmap!!.asImageBitmap(),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(4.dp))
+                                            .padding(2.dp),
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                                    )
+                                } else {
+                                    val mediaIcon = when (attachedMediaType) {
+                                        "video" -> Icons.Filled.Videocam
+                                        "document" -> Icons.Filled.Description
+                                        else -> Icons.Filled.Image
+                                    }
+                                    Icon(
+                                        imageVector = mediaIcon,
+                                        contentDescription = null,
+                                        tint = AccentSavings,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    Text(
+                                        text = attachedMediaName ?: "Media Terlampir",
+                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = "Siap dianalisa & diekstrak ke target tabungan",
+                                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 9.sp),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            IconButton(onClick = { 
+                                attachedMediaName = null
+                                attachedImageBitmap = null
+                                attachedImageUri = null
+                                attachedMediaType = null 
+                            }, modifier = Modifier.size(24.dp)) {
+                                Icon(imageVector = Icons.Filled.Close, contentDescription = "Batal", modifier = Modifier.size(16.dp))
+                            }
+                        }
+                    }
+                }
+
+                // Voice Recording Visualization
+                AnimatedVisibility(visible = isRecordingVoice) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CustomAudioWaveformVisualizer(
+                            soundLevel = currentSoundLevel,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(60.dp)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = speechStatusText,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+
+                // Input Area
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(24.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp))
+                        .padding(horizontal = 6.dp, vertical = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Attachment Dropdown Trigger Button (+)
+                    Box {
+                        IconButton(
+                            onClick = { showAttachmentSheet = true },
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(
+                                    if (showAttachmentSheet) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                    CircleShape
+                                )
+                                .testTag("attach_media_button")
+                        ) {
+                            Icon(
+                                imageVector = if (showAttachmentSheet) Icons.Filled.Close else Icons.Filled.Add,
+                                contentDescription = "Lampirkan Berkas",
+                                tint = if (showAttachmentSheet) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        androidx.compose.material3.DropdownMenu(
+                            expanded = showAttachmentSheet,
+                            onDismissRequest = { showAttachmentSheet = false },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                        ) {
+                            androidx.compose.material3.DropdownMenuItem(
+                                text = { Text("Kamera", style = MaterialTheme.typography.labelMedium) },
+                                leadingIcon = {
+                                    Icon(Icons.Filled.PhotoCamera, contentDescription = null, modifier = Modifier.size(18.dp))
+                                },
+                                onClick = {
+                                    showAttachmentSheet = false
+                                    cameraLauncher.launch(null)
+                                }
+                            )
+                            androidx.compose.material3.DropdownMenuItem(
+                                text = { Text("Galeri", style = MaterialTheme.typography.labelMedium) },
+                                leadingIcon = {
+                                    Icon(Icons.Filled.Image, contentDescription = null, modifier = Modifier.size(18.dp))
+                                },
+                                onClick = {
+                                    showAttachmentSheet = false
+                                    imageGalleryLauncher.launch("image/*")
+                                }
+                            )
+                            androidx.compose.material3.DropdownMenuItem(
+                                text = { Text("Dokumen", style = MaterialTheme.typography.labelMedium) },
+                                leadingIcon = {
+                                    Icon(Icons.Filled.Description, contentDescription = null, modifier = Modifier.size(18.dp))
+                                },
+                                onClick = {
+                                    showAttachmentSheet = false
+                                    documentPickerLauncher.launch("*/*")
+                                }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Box(modifier = Modifier.weight(1f)) {
+                        if (inputText.isEmpty() && !isRecordingVoice) {
+                            Text(
+                                text = if (attachedMediaName != null) "Ketik instruksi media..." else "Pesan FinMonochrome AI...",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        BasicTextField(
+                            value = inputText,
+                            onValueChange = { inputText = it },
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
+                            modifier = Modifier.fillMaxWidth().testTag("ai_input_field"),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                            keyboardActions = KeyboardActions(
+                                onSend = {
+                                    if ((inputText.isNotBlank() || attachedMediaName != null) && !isAiLoading) {
+                                        val query = inputText.trim()
+                                        val mediaName = attachedMediaName
+                                        val mediaType = attachedMediaType
+                                        inputText = ""
+                                        attachedMediaName = null
+                                        attachedMediaType = null
+                                        attachedImageBitmap = null
+                                        attachedImageUri = null
+                                        focusManager.clearFocus()
+                                        onSendMessage(query, mediaName, mediaType)
+                                    }
+                                }
+                            )
+                        )
+                    }
+
+                    val canSend = (inputText.isNotBlank() || attachedMediaName != null) && !isAiLoading
+
+                    // Voice / Send Button
+                    if (inputText.isBlank() && attachedMediaName == null) {
+                        IconButton(
+                            onClick = {
+                                if (hasAudioPermission) {
+                                    if (isRecordingVoice) {
+                                        speechRecognizer?.stopListening()
+                                        isRecordingVoice = false
+                                    } else {
+                                        val intent = android.content.Intent(android.speech.RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL, android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                            putExtra(android.speech.RecognizerIntent.EXTRA_LANGUAGE, "id-ID")
+                                        }
+                                        speechRecognizer?.startListening(intent)
+                                        isRecordingVoice = true
+                                        speechStatusText = "Mendengarkan..."
+                                    }
+                                } else {
+                                    audioPermissionLauncher.launch(android.Manifest.permission.RECORD_AUDIO)
+                                }
+                            },
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (isRecordingVoice) Icons.Filled.Stop else Icons.Filled.Mic,
+                                contentDescription = "Voice",
+                                tint = if (isRecordingVoice) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = {
+                                if (canSend) {
+                                    val query = inputText.trim()
+                                    val mediaName = attachedMediaName
+                                    val mediaType = attachedMediaType
+                                    inputText = ""
+                                    attachedMediaName = null
+                                    attachedMediaType = null
+                                    attachedImageBitmap = null
+                                    attachedImageUri = null
+                                    focusManager.clearFocus()
+                                    onSendMessage(query, mediaName, mediaType)
+                                }
+                            },
+                            enabled = canSend,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(
+                                    if (canSend) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                                    CircleShape
+                                )
+                                .testTag("send_ai_message_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Send,
+                                contentDescription = "Kirim",
+                                tint = if (canSend) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
