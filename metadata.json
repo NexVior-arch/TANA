@@ -1,0 +1,7 @@
+{
+  "name": "TANA",
+  "description": "Aplikasi pencatat tabungan dan pengeluaran harian minimalis monokrom dengan visual chart, pengingat harian, dan asisten AI OpenRouter.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
