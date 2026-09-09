@@ -1129,7 +1129,7 @@ fun AiScreen(
                                             .padding(2.dp),
                                         contentScale = androidx.compose.ui.layout.ContentScale.Crop
                                     )
-                                } else {
+                                } else if (attachedImageBitmap != null) {
                                     attachedImageBitmap?.let { bmp ->
                                         androidx.compose.foundation.Image(
                                             bitmap = bmp.asImageBitmap(),
