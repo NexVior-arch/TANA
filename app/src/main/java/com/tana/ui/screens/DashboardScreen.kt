@@ -195,7 +195,7 @@ fun DashboardScreen(
                             .clip(RoundedCornerShape(14.dp))
                             .background(
                                 Brush.linearGradient(
-                                    listOf(BrandPrimary, Color(0xFF8B5CF6))
+                                    listOf(BrandPrimary, Color(0xFFC6A15B))
                                 )
                             ),
                         contentAlignment = Alignment.Center
@@ -264,8 +264,8 @@ fun DashboardScreen(
                             1.dp,
                             Brush.linearGradient(
                                 listOf(
-                                    Color(0x668B5CF6),
-                                    Color(0x226366F1),
+                                    Color(0x66C6A15B),
+                                    Color(0x2294722F),
                                     Color(0x10FFFFFF)
                                 )
                             )
@@ -297,7 +297,7 @@ fun DashboardScreen(
                             )
                         )
                         .animatedSpecularGlow(
-                            glowColor = Color(0xFF818CF8),
+                            glowColor = Color(0xFFC6A15B),
                             glowAlpha = 0.35f,
                             durationMillis = 3600
                         )
@@ -328,7 +328,7 @@ fun DashboardScreen(
                                     letterSpacing = 1.6.sp,
                                     fontWeight = FontWeight.Black
                                 ),
-                                color = Color(0xFFB2AEE0)
+                                color = Color(0xFFC4BCA9)
                             )
                         }
 
@@ -337,7 +337,7 @@ fun DashboardScreen(
                             Surface(
                                 color = Color(0xFF201D42).copy(alpha = 0.9f),
                                 shape = RoundedCornerShape(20.dp),
-                                border = BorderStroke(0.8.dp, Color(0xFF818CF8).copy(alpha = 0.45f)),
+                                border = BorderStroke(0.8.dp, Color(0xFFC6A15B).copy(alpha = 0.45f)),
                                 modifier = Modifier
                                     .clickable { isDropdownOpen = true }
                                     .testTag("savings_dropdown_selector")
@@ -366,7 +366,7 @@ fun DashboardScreen(
                                     Icon(
                                         imageVector = Icons.Filled.ArrowDropDown,
                                         contentDescription = "Pilih Tabungan",
-                                        tint = Color(0xFFB2AEE0),
+                                        tint = Color(0xFFC4BCA9),
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -430,7 +430,7 @@ fun DashboardScreen(
                                                     Text(
                                                         text = FinanceViewModel.formatRupiah(goal.currentAmount),
                                                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.5.sp),
-                                                        color = Color(0xFFB2AEE0)
+                                                        color = Color(0xFFC4BCA9)
                                                     )
                                                 }
                                                 if (isCurrent) {
@@ -476,7 +476,7 @@ fun DashboardScreen(
                             Text(
                                 text = if (selectedGoal != null) "Target: ${FinanceViewModel.formatCompact(displayedTargetAmount)}" else "Total Target: ${FinanceViewModel.formatCompact(displayedTargetAmount)}",
                                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                                color = Color(0xFFB2AEE0)
+                                color = Color(0xFFC4BCA9)
                             )
                             Text(
                                 text = "${(displayedProgress * 100).toInt()}% Tercapai",
@@ -529,7 +529,7 @@ fun DashboardScreen(
                                 Text(
                                     text = "Target",
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                    color = Color(0xFFB2AEE0)
+                                    color = Color(0xFFC4BCA9)
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -560,7 +560,7 @@ fun DashboardScreen(
                                 Text(
                                     text = "Sisa Butuh",
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                    color = Color(0xFFB2AEE0)
+                                    color = Color(0xFFC4BCA9)
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -591,7 +591,7 @@ fun DashboardScreen(
                                 Text(
                                     text = "Rencana",
                                     style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                                    color = Color(0xFFB2AEE0)
+                                    color = Color(0xFFC4BCA9)
                                 )
                             }
                             Spacer(modifier = Modifier.height(4.dp))
@@ -792,7 +792,7 @@ fun DashboardScreen(
                                     .clip(RoundedCornerShape(3.dp))
                                     .background(
                                         Brush.horizontalGradient(
-                                            listOf(AccentSavings, Color(0xFF38BDF8))
+                                            listOf(AccentSavings, Color(0xFFD4B876))
                                         )
                                     )
                             )
@@ -909,7 +909,7 @@ private fun QuickActionButton(
             .testTag(testTag),
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-        border = BorderStroke(1.dp, com.tana.ui.theme.GlassGradientBorder),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
         shadowElevation = 2.dp
     ) {
         Column(
