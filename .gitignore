@@ -1,0 +1,26 @@
+*.iml
+.gradle
+.kotlin
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+.env
+# debug.keystore is intentionally NOT ignored - see below.
+# This is the DEBUG signing key only (never the release key), and it must be
+# committed and stay identical across every CI build. If this file is missing,
+# CI generates a brand new random keystore on every run, which re-signs the APK
+# with a different key each time - Android then refuses to install the update
+# over the previous one ("package conflicts with an existing package") and
+# forces the user to uninstall first. Debug keystores use a universally known,
+# non-secret password ("android"/"android"), so committing this file is safe
+# and standard practice - it is NOT the same as committing a release keystore.
