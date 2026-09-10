@@ -75,7 +75,6 @@ import com.tana.ui.theme.AccentIncome
 import com.tana.ui.theme.AccentSavings
 import com.tana.ui.theme.DarkGlassBackground
 import com.tana.ui.theme.DarkGlassBorder
-import com.tana.ui.theme.GlassGradientBorder
 import com.tana.ui.viewmodel.FinanceViewModel
 
 @Composable
@@ -83,19 +82,20 @@ fun MonochromeCard(
     modifier: Modifier = Modifier,
     backgroundColor: Color = MaterialTheme.colorScheme.surface.copy(alpha = 0.90f),
     borderColor: Color? = null,
-    borderBrush: Brush? = GlassGradientBorder,
+    borderBrush: Brush? = null,
     cornerRadius: Dp = 20.dp,
     contentPadding: Dp = 18.dp,
     onClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val shape = RoundedCornerShape(cornerRadius)
+    // Standard flat card border: a single thin, low-contrast line - the same
+    // treatment real banking/e-wallet apps use (BCA mobile, GoPay, etc). Gradient
+    // borders are only used where a caller explicitly opts in via borderBrush.
     val borderModifier = if (borderBrush != null) {
         Modifier.border(BorderStroke(1.dp, borderBrush), shape)
-    } else if (borderColor != null) {
-        Modifier.border(BorderStroke(1.dp, borderColor), shape)
     } else {
-        Modifier.border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), shape)
+        Modifier.border(BorderStroke(1.dp, borderColor ?: MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), shape)
     }
 
     val baseModifier = modifier
@@ -127,7 +127,6 @@ fun GlassCard(
     MonochromeCard(
         modifier = modifier,
         backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.78f),
-        borderBrush = GlassGradientBorder,
         cornerRadius = cornerRadius,
         contentPadding = contentPadding,
         onClick = onClick,
@@ -391,7 +390,7 @@ class ThousandsSeparatorVisualTransformation : VisualTransformation {
  */
 @Composable
 fun Modifier.animatedSpecularGlow(
-    glowColor: Color = Color(0xFF818CF8),
+    glowColor: Color = Color(0xFFC6A15B),
     glowAlpha: Float = 0.25f,
     durationMillis: Int = 3200
 ): Modifier {
@@ -444,7 +443,7 @@ fun GradientButton(
     shape: Shape = RoundedCornerShape(16.dp),
     border: BorderStroke? = BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)),
     contentColor: Color = Color.White,
-    disabledContentColor: Color = Color(0xFF94A3B8),
+    disabledContentColor: Color = Color(0xFF9C9587),
     contentPadding: androidx.compose.foundation.layout.PaddingValues = androidx.compose.foundation.layout.PaddingValues(horizontal = 18.dp, vertical = 13.dp),
     content: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit
 ) {
