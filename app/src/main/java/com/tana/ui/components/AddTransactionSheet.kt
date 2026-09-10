@@ -62,7 +62,6 @@ import com.tana.data.model.TransactionType
 import com.tana.ui.theme.AccentExpense
 import com.tana.ui.theme.AccentIncome
 import com.tana.ui.theme.AccentSavings
-import com.tana.ui.theme.GlassGradientBorder
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -168,7 +167,7 @@ fun AddTransactionSheet(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                    .border(BorderStroke(1.dp, GlassGradientBorder), RoundedCornerShape(16.dp))
+                    .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)), RoundedCornerShape(16.dp))
                     .padding(5.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
@@ -395,7 +394,7 @@ private fun TypeSegmentButton(
     onClick: () -> Unit
 ) {
     val bg = if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent
-    val border = if (isSelected) BorderStroke(1.dp, GlassGradientBorder) else null
+    val border = if (isSelected) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else null
 
     Surface(
         color = bg,
