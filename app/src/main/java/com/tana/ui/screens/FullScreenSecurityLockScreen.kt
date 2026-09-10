@@ -330,7 +330,7 @@ fun FullScreenSecurityLockScreen(
                 Spacer(modifier = Modifier.height(18.dp))
 
                 Text(
-                    text = "FINMONOCHROME",
+                    text = "TANA",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Black,
                         letterSpacing = 2.5.sp
