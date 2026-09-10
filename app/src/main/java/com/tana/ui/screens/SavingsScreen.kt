@@ -543,8 +543,8 @@ fun SavingsScreen(
                             1.dp,
                             Brush.linearGradient(
                                 listOf(
-                                    Color(0x668B5CF6),
-                                    Color(0x336366F1),
+                                    Color(0x66C6A15B),
+                                    Color(0x3394722F),
                                     Color(0x10FFFFFF)
                                 )
                             )
@@ -576,7 +576,7 @@ fun SavingsScreen(
                             )
                         )
                         .animatedSpecularGlow(
-                            glowColor = Color(0xFF818CF8),
+                            glowColor = Color(0xFFC6A15B),
                             glowAlpha = 0.28f,
                             durationMillis = 4000
                         )
@@ -599,7 +599,7 @@ fun SavingsScreen(
                                     letterSpacing = 1.4.sp,
                                     fontWeight = FontWeight.Bold
                                 ),
-                                color = Color(0xFFB2AEE0)
+                                color = Color(0xFFC4BCA9)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             AnimatedAmountText(
@@ -636,7 +636,7 @@ fun SavingsScreen(
                         Text(
                             text = "Target Akumulasi: ${FinanceViewModel.formatRupiah(totalTargetGoals)}",
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.5.sp),
-                            color = Color(0xFFB2AEE0)
+                            color = Color(0xFFC4BCA9)
                         )
                         Text(
                             text = "${activeGoals.size} Aktif • ${completedGoals.size} Selesai",
@@ -662,7 +662,7 @@ fun SavingsScreen(
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(
                                     Brush.horizontalGradient(
-                                        listOf(AccentSavings, Color(0xFF818CF8))
+                                        listOf(AccentSavings, Color(0xFFC6A15B))
                                     )
                                 )
                         )
