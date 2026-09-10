@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -376,7 +377,19 @@ fun SettingsScreen(
         }
     }
 
+    val settingsListState = rememberLazyListState()
+
+    // When the category filter changes, jump back to the top so the newly-visible
+    // section is immediately in view. Without this, picking a category far down the
+    // list (e.g. "Pengingat") could look like "nothing happened" if the user's scroll
+    // position was left somewhere that no longer has any visible content for that
+    // category.
+    LaunchedEffect(selectedCategoryTab) {
+        settingsListState.animateScrollToItem(0)
+    }
+
     LazyColumn(
+        state = settingsListState,
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
@@ -1387,7 +1400,7 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "FINMONOCHROME v1.0",
+                    text = "TANA v1.0",
                     style = MaterialTheme.typography.labelSmall.copy(
                         letterSpacing = 1.6.sp,
                         fontWeight = FontWeight.Bold
