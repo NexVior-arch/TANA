@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.MyApplication" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">#040B09</item>
-        <item name="android:statusBarColor">#040B09</item>
-        <item name="android:navigationBarColor">#040B09</item>
+        <item name="android:windowBackground">#161513</item>
+        <item name="android:statusBarColor">#161513</item>
+        <item name="android:navigationBarColor">#161513</item>
         <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!--
+        Splash screen theme (androidx.core.splashscreen). This replaces the plain
+        black screen with a small icon in the middle that Android shows by default
+        when an app has no splash screen configured - that default is what looked
+        "burik"/broken. windowSplashScreenBackground uses the app's own warm
+        charcoal tone (not pure black), and the icon is the TANA brand mark
+        (gold/navy hexagon) instead of the tiny generic launcher icon.
+    -->
+    <style name="Theme.Tana.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#211E1A</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_icon</item>
+        <item name="windowSplashScreenIconBackgroundColor">#211E1A</item>
+        <item name="postSplashScreenTheme">@style/Theme.MyApplication</item>
     </style>
 </resources>
