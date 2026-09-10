@@ -64,7 +64,6 @@ import com.tana.data.model.TransactionEntity
 import com.tana.data.model.TransactionType
 import com.tana.ui.theme.AccentExpense
 import com.tana.ui.theme.AccentSavings
-import com.tana.ui.theme.GlassGradientBorder
 import com.tana.ui.theme.PrimaryButtonGradient
 import com.tana.ui.theme.CyanButtonGradient
 import com.tana.ui.theme.RoseButtonGradient
@@ -181,7 +180,7 @@ fun NabungActionSheet(
             Surface(
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(16.dp),
-                border = BorderStroke(1.dp, GlassGradientBorder),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -206,7 +205,7 @@ fun NabungActionSheet(
                         Surface(
                             color = if (isSelected) activeColor else Color.Transparent,
                             shape = RoundedCornerShape(12.dp),
-                            border = if (isSelected) BorderStroke(1.dp, GlassGradientBorder) else null,
+                            border = if (isSelected) BorderStroke(1.dp, textColor.copy(alpha = 0.4f)) else null,
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(12.dp))
@@ -245,7 +244,7 @@ fun NabungActionSheet(
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         shape = RoundedCornerShape(16.dp),
-                        border = BorderStroke(1.dp, GlassGradientBorder),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(
@@ -391,7 +390,7 @@ fun NabungActionSheet(
                                 Surface(
                                     color = if (isSelected) AccentSavings.copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(12.dp),
-                                    border = if (isSelected) BorderStroke(1.5.dp, AccentSavings) else BorderStroke(1.dp, GlassGradientBorder),
+                                    border = if (isSelected) BorderStroke(1.5.dp, AccentSavings) else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(12.dp))
                                         .clickable {
