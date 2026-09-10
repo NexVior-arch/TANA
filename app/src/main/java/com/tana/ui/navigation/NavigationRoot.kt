@@ -244,40 +244,8 @@ fun NavigationRoot(
                 .padding(innerPadding)
         ) {
             if (showSettingsScreen) {
-                SettingsScreen(
-                    openRouterApiKey = openRouterApiKey,
-                    openRouterModel = openRouterModel,
-                    isReminderEnabled = isReminderEnabled,
-                    reminderHour = reminderHour,
-                    reminderMinute = reminderMinute,
-                    reminderCustomMessage = reminderCustomMessage,
-                    currencyCode = currencyCode,
-                    currencySymbol = currencySymbol,
-                    isAppLockEnabled = isAppLockEnabled,
-                    appLockPin = appLockPin,
-                    isBiometricEnabled = isBiometricEnabled,
-                    telegramBotToken = telegramBotToken,
-                    telegramChatId = telegramChatId,
-                    maxAllowedFailedAttempts = maxAllowedFailedAttempts,
-                    telegramTestStatus = telegramTestStatus,
-                    aiTestResult = aiTestResult,
-                    isAiTestLoading = isAiTestLoading,
-                    onSaveApiKey = { viewModel.setOpenRouterApiKey(it) },
-                    onSelectModel = { viewModel.setOpenRouterModel(it) },
-                    onTestOpenRouter = { key, model -> viewModel.testOpenRouterConnection(key, model) },
-                    onClearTestResult = { viewModel.clearAiTestResult() },
-                    onUpdateReminder = { enabled, h, m, msg ->
-                        viewModel.updateReminderSettings(enabled, h, m, msg)
-                    },
-                    onTriggerTestNotification = { viewModel.triggerTestNotification() },
-                    onUpdateSecuritySettings = { lockEnabled, pin, bioEnabled, botToken, chatId, maxAttempts ->
-                        viewModel.updateSecuritySettings(lockEnabled, pin, bioEnabled, botToken, chatId, maxAttempts)
-                    },
-                    onTestTelegramConnection = { botToken, chatId ->
-                        viewModel.testTelegramBotConnection(botToken, chatId) { _, _ -> }
-                    },
-                    onSetCurrency = { code, sym -> viewModel.setCurrency(code, sym) },
-                    onClearAllData = { viewModel.clearAllData() },
+                SettingsScreenHost(
+                    viewModel = viewModel,
                     onBack = { showSettingsScreen = false }
                 )
             } else {
@@ -480,6 +448,78 @@ fun NavigationRoot(
     }
 }
 
+/**
+ * Isolated host for SettingsScreen. Collects ONLY the StateFlows Settings actually
+ * needs (11, not the 28 collected at NavigationRoot's top level) and passes stable
+ * method references instead of freshly-allocated lambdas. This means Settings no
+ * longer recomposes every time unrelated state changes elsewhere in the app (e.g.
+ * `transactions`/`savingsGoals` updating from the autonomous AI deposit agent every
+ * few seconds while the user is sitting on the Settings screen) - that unrelated
+ * churn was the cause of Settings feeling laggy.
+ */
+@Composable
+private fun SettingsScreenHost(
+    viewModel: FinanceViewModel,
+    onBack: () -> Unit
+) {
+    val openRouterApiKey by viewModel.openRouterApiKey.collectAsState()
+    val openRouterModel by viewModel.openRouterModel.collectAsState()
+    val isReminderEnabled by viewModel.isReminderEnabled.collectAsState()
+    val reminderHour by viewModel.reminderHour.collectAsState()
+    val reminderMinute by viewModel.reminderMinute.collectAsState()
+    val reminderCustomMessage by viewModel.reminderCustomMessage.collectAsState()
+    val currencyCode by viewModel.currencyCode.collectAsState()
+    val currencySymbol by viewModel.currencySymbol.collectAsState()
+    val aiTestResult by viewModel.aiTestResult.collectAsState()
+    val isAiTestLoading by viewModel.isAiTestLoading.collectAsState()
+    val isAppLockEnabled by viewModel.isAppLockEnabled.collectAsState()
+    val appLockPin by viewModel.appLockPin.collectAsState()
+    val isBiometricEnabled by viewModel.isBiometricEnabled.collectAsState()
+    val telegramBotToken by viewModel.telegramBotToken.collectAsState()
+    val telegramChatId by viewModel.telegramChatId.collectAsState()
+    val maxAllowedFailedAttempts by viewModel.maxAllowedFailedAttempts.collectAsState()
+    val telegramTestStatus by viewModel.telegramTestStatus.collectAsState()
+
+    SettingsScreen(
+        openRouterApiKey = openRouterApiKey,
+        openRouterModel = openRouterModel,
+        isReminderEnabled = isReminderEnabled,
+        reminderHour = reminderHour,
+        reminderMinute = reminderMinute,
+        reminderCustomMessage = reminderCustomMessage,
+        currencyCode = currencyCode,
+        currencySymbol = currencySymbol,
+        isAppLockEnabled = isAppLockEnabled,
+        appLockPin = appLockPin,
+        isBiometricEnabled = isBiometricEnabled,
+        telegramBotToken = telegramBotToken,
+        telegramChatId = telegramChatId,
+        maxAllowedFailedAttempts = maxAllowedFailedAttempts,
+        telegramTestStatus = telegramTestStatus,
+        aiTestResult = aiTestResult,
+        isAiTestLoading = isAiTestLoading,
+        onSaveApiKey = remember(viewModel) { { key: String -> viewModel.setOpenRouterApiKey(key) } },
+        onSelectModel = remember(viewModel) { { model: String -> viewModel.setOpenRouterModel(model) } },
+        onTestOpenRouter = remember(viewModel) { { key: String, model: String -> viewModel.testOpenRouterConnection(key, model) } },
+        onClearTestResult = remember(viewModel) { { viewModel.clearAiTestResult() } },
+        onUpdateReminder = remember(viewModel) {
+            { enabled: Boolean, h: Int, m: Int, msg: String -> viewModel.updateReminderSettings(enabled, h, m, msg) }
+        },
+        onTriggerTestNotification = remember(viewModel) { { viewModel.triggerTestNotification() } },
+        onUpdateSecuritySettings = remember(viewModel) {
+            { lockEnabled: Boolean, pin: String, bioEnabled: Boolean, botToken: String, chatId: String, maxAttempts: Int ->
+                viewModel.updateSecuritySettings(lockEnabled, pin, bioEnabled, botToken, chatId, maxAttempts)
+            }
+        },
+        onTestTelegramConnection = remember(viewModel) {
+            { botToken: String, chatId: String -> viewModel.testTelegramBotConnection(botToken, chatId) { _, _ -> } }
+        },
+        onSetCurrency = remember(viewModel) { { code: String, sym: String -> viewModel.setCurrency(code, sym) } },
+        onClearAllData = remember(viewModel) { { viewModel.clearAllData() } },
+        onBack = onBack
+    )
+}
+
 @Composable
 private fun CustomBottomNavigationBar(
     currentTab: AppNavTab,
@@ -496,7 +536,7 @@ private fun CustomBottomNavigationBar(
     ) {
         Surface(
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-            border = BorderStroke(1.dp, com.tana.ui.theme.GlassGradientBorder),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
             shape = RoundedCornerShape(28.dp),
             shadowElevation = 12.dp,
             modifier = Modifier.fillMaxWidth()
@@ -532,7 +572,7 @@ private fun CustomBottomNavigationBar(
                             androidx.compose.ui.graphics.Brush.linearGradient(
                                 listOf(
                                     MaterialTheme.colorScheme.primary,
-                                    Color(0xFF8B5CF6)
+                                    Color(0xFFC6A15B)
                                 )
                             )
                         )
