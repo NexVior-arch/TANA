@@ -186,7 +186,7 @@ fun QuickWidgetFullScreen(
                         Text(
                             text = "Aksi Pintar Langsung dari Widget",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                            color = Color(0xFF94A3B8)
+                            color = Color(0xFF9C9587)
                         )
                     }
                 },
@@ -212,8 +212,8 @@ fun QuickWidgetFullScreen(
                     Surface(
                         modifier = Modifier.padding(end = 16.dp),
                         shape = RoundedCornerShape(20.dp),
-                        color = if (isDeposit) Color(0x256366F1) else Color(0x25FB7185),
-                        border = BorderStroke(1.dp, if (isDeposit) Color(0xFF6366F1) else Color(0xFFFB7185))
+                        color = if (isDeposit) Color(0x2594722F) else Color(0x25FB7185),
+                        border = BorderStroke(1.dp, if (isDeposit) Color(0xFF94722F) else Color(0xFFFB7185))
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -223,7 +223,7 @@ fun QuickWidgetFullScreen(
                                 modifier = Modifier
                                     .size(7.dp)
                                     .clip(CircleShape)
-                                    .background(if (isDeposit) Color(0xFF6366F1) else Color(0xFFFB7185))
+                                    .background(if (isDeposit) Color(0xFF94722F) else Color(0xFFFB7185))
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
@@ -233,7 +233,7 @@ fun QuickWidgetFullScreen(
                                     fontSize = 10.sp,
                                     letterSpacing = 1.sp
                                 ),
-                                color = if (isDeposit) Color(0xFF818CF8) else Color(0xFFFDA4AF)
+                                color = if (isDeposit) Color(0xFFC6A15B) else Color(0xFFFDA4AF)
                             )
                         }
                     }
@@ -280,11 +280,11 @@ fun QuickWidgetFullScreen(
                             .shadow(
                                 elevation = 12.dp,
                                 shape = RoundedCornerShape(16.dp),
-                                spotColor = if (isDeposit) Color(0xFF6366F1) else Color(0xFFFB7185)
+                                spotColor = if (isDeposit) Color(0xFF94722F) else Color(0xFFFB7185)
                             ),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isDeposit) Color(0xFF6366F1) else Color(0xFFFB7185),
+                            containerColor = if (isDeposit) Color(0xFF94722F) else Color(0xFFFB7185),
                             disabledContainerColor = Color(0xFF29264A)
                         ),
                         enabled = curGoal != null && parsedAmount > 0
@@ -339,7 +339,7 @@ fun QuickWidgetFullScreen(
                         .clip(RoundedCornerShape(10.dp))
                         .background(
                             if (isDeposit) Brush.horizontalGradient(
-                                listOf(Color(0xFF6366F1), Color(0xFF4338CA))
+                                listOf(Color(0xFF94722F), Color(0xFF8A6C38))
                             ) else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
                         )
                         .clickable { isDeposit = true },
@@ -443,7 +443,7 @@ fun QuickWidgetFullScreen(
                                 Icon(
                                     imageVector = Icons.Filled.Flag,
                                     contentDescription = null,
-                                    tint = Color(0xFF818CF8),
+                                    tint = Color(0xFFC6A15B),
                                     modifier = Modifier.size(20.dp)
                                 )
                             }
@@ -502,7 +502,7 @@ fun QuickWidgetFullScreen(
                                                 style = MaterialTheme.typography.bodyMedium.copy(
                                                     fontWeight = if (isChosen) FontWeight.Bold else FontWeight.Normal
                                                 ),
-                                                color = if (isChosen) Color(0xFF818CF8) else Color.White
+                                                color = if (isChosen) Color(0xFFC6A15B) else Color.White
                                             )
                                             Text(
                                                 text = "Saldo: ${FinanceViewModel.formatRupiah(goal.currentAmount)}",
@@ -514,7 +514,7 @@ fun QuickWidgetFullScreen(
                                             Icon(
                                                 imageVector = Icons.Filled.Check,
                                                 contentDescription = null,
-                                                tint = Color(0xFF818CF8),
+                                                tint = Color(0xFFC6A15B),
                                                 modifier = Modifier.size(18.dp)
                                             )
                                         }
@@ -558,7 +558,7 @@ fun QuickWidgetFullScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFF0D1D19),
                     unfocusedContainerColor = Color(0xFF0D1D19),
-                    focusedBorderColor = if (isDeposit) Color(0xFF6366F1) else Color(0xFFFB7185),
+                    focusedBorderColor = if (isDeposit) Color(0xFF94722F) else Color(0xFFFB7185),
                     unfocusedBorderColor = Color(0xFF224A40),
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White
@@ -571,7 +571,7 @@ fun QuickWidgetFullScreen(
                 prefix = {
                     Text(
                         text = "Rp ",
-                        color = if (isDeposit) Color(0xFF818CF8) else Color(0xFFFDA4AF),
+                        color = if (isDeposit) Color(0xFFC6A15B) else Color(0xFFFDA4AF),
                         fontWeight = FontWeight.Black,
                         fontSize = 20.sp
                     )
@@ -582,7 +582,7 @@ fun QuickWidgetFullScreen(
                             Icon(
                                 imageVector = Icons.Filled.Clear,
                                 contentDescription = "Hapus",
-                                tint = Color(0xFF64748B),
+                                tint = Color(0xFF71695A),
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -600,7 +600,7 @@ fun QuickWidgetFullScreen(
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp
                 ),
-                color = Color(0xFF64748B)
+                color = Color(0xFF71695A)
             )
             Spacer(modifier = Modifier.height(6.dp))
 
@@ -637,7 +637,7 @@ fun QuickWidgetFullScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp
                             ),
-                            color = if (isDeposit) Color(0xFF818CF8) else Color(0xFFFDA4AF),
+                            color = if (isDeposit) Color(0xFFC6A15B) else Color(0xFFFDA4AF),
                             modifier = Modifier
                                 .padding(vertical = 10.dp)
                                 .wrapContentWidth(Alignment.CenterHorizontally)
@@ -670,7 +670,7 @@ fun QuickWidgetFullScreen(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp
                             ),
-                            color = if (isDeposit) Color(0xFF818CF8) else Color(0xFFFDA4AF),
+                            color = if (isDeposit) Color(0xFFC6A15B) else Color(0xFFFDA4AF),
                             modifier = Modifier
                                 .padding(vertical = 10.dp)
                                 .wrapContentWidth(Alignment.CenterHorizontally)
@@ -696,14 +696,14 @@ fun QuickWidgetFullScreen(
             OutlinedTextField(
                 value = noteText,
                 onValueChange = { noteText = it },
-                placeholder = { Text("Contoh: Uang kembalian, bonus proyek, dll...", color = Color(0xFF64748B), fontSize = 13.sp) },
+                placeholder = { Text("Contoh: Uang kembalian, bonus proyek, dll...", color = Color(0xFF71695A), fontSize = 13.sp) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color(0xFF0D1D19),
                     unfocusedContainerColor = Color(0xFF0D1D19),
-                    focusedBorderColor = Color(0xFF818CF8),
+                    focusedBorderColor = Color(0xFFC6A15B),
                     unfocusedBorderColor = Color(0xFF224A40),
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White
