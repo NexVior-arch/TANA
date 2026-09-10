@@ -56,7 +56,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.tana.data.model.TransactionEntity
 import com.tana.ui.theme.AccentExpense
 import com.tana.ui.theme.AccentSavings
-import com.tana.ui.theme.GlassGradientBorder
 import com.tana.ui.theme.PrimaryButtonGradient
 import com.tana.ui.theme.SoftBlueGradient
 import com.tana.ui.theme.DisabledButtonGradient
@@ -111,8 +110,8 @@ fun CatatTabunganDialog(
             modifier = Modifier
                 .fillMaxWidth(0.92f)
                 .clip(RoundedCornerShape(24.dp)),
-            color = Color(0xFF20242B), // Exact dark obsidian slate background as Screenshot 1
-            border = BorderStroke(1.dp, GlassGradientBorder)
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
         ) {
             Column(
                 modifier = Modifier
@@ -164,7 +163,7 @@ fun CatatTabunganDialog(
                                 Icon(
                                     imageVector = Icons.Default.Add,
                                     contentDescription = null,
-                                    tint = if (isSetorMode) Color.White else Color(0xFF94A3B8),
+                                    tint = if (isSetorMode) Color.White else Color(0xFF9C9587),
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -174,7 +173,7 @@ fun CatatTabunganDialog(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 14.sp
                                     ),
-                                    color = if (isSetorMode) Color.White else Color(0xFF94A3B8)
+                                    color = if (isSetorMode) Color.White else Color(0xFF9C9587)
                                 )
                             }
                         }
@@ -199,7 +198,7 @@ fun CatatTabunganDialog(
                                 Icon(
                                     imageVector = Icons.Default.Remove,
                                     contentDescription = null,
-                                    tint = if (!isSetorMode) Color.White else Color(0xFF94A3B8),
+                                    tint = if (!isSetorMode) Color.White else Color(0xFF9C9587),
                                     modifier = Modifier.size(16.dp)
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
@@ -209,7 +208,7 @@ fun CatatTabunganDialog(
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 14.sp
                                     ),
-                                    color = if (!isSetorMode) Color.White else Color(0xFF94A3B8)
+                                    color = if (!isSetorMode) Color.White else Color(0xFF9C9587)
                                 )
                             }
                         }
@@ -224,12 +223,12 @@ fun CatatTabunganDialog(
                             amountTfv = tfv
                         }
                     },
-                    label = { Text("Nominal", color = Color(0xFFA0AEC0)) },
+                    label = { Text("Nominal", color = Color(0xFFA39D8F)) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Payments,
                             contentDescription = null,
-                            tint = Color(0xFFA0AEC0),
+                            tint = Color(0xFFA39D8F),
                             modifier = Modifier.size(20.dp)
                         )
                     },
@@ -239,7 +238,7 @@ fun CatatTabunganDialog(
                                 Icon(
                                     imageVector = Icons.Default.Cancel,
                                     contentDescription = "Hapus",
-                                    tint = Color(0xFFA0AEC0),
+                                    tint = Color(0xFFA39D8F),
                                     modifier = Modifier.size(18.dp)
                                 )
                             }
@@ -250,8 +249,8 @@ fun CatatTabunganDialog(
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF818CF8),
-                        unfocusedBorderColor = Color(0xFF475569),
+                        focusedBorderColor = Color(0xFFC6A15B),
+                        unfocusedBorderColor = Color(0xFF524D42),
                         focusedContainerColor = Color(0xFF181B20),
                         unfocusedContainerColor = Color(0xFF181B20),
                         focusedTextColor = Color.White,
@@ -284,7 +283,7 @@ fun CatatTabunganDialog(
                                 shape = RoundedCornerShape(12.dp),
                                 border = BorderStroke(
                                     if (isSelected) 1.5.dp else 1.dp,
-                                    if (isSelected) Color(0xFF818CF8) else Color.White.copy(alpha = 0.15f)
+                                    if (isSelected) Color(0xFFC6A15B) else Color.White.copy(alpha = 0.15f)
                                 ),
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(12.dp))
@@ -306,7 +305,7 @@ fun CatatTabunganDialog(
                                         fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Bold,
                                         fontSize = 13.sp
                                     ),
-                                    color = if (isSelected) Color(0xFFB4C6FF) else Color.White,
+                                    color = if (isSelected) Color(0xFFD4B876) else Color.White,
                                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
                                 )
                             }
@@ -318,20 +317,20 @@ fun CatatTabunganDialog(
                 OutlinedTextField(
                     value = noteText,
                     onValueChange = { noteText = it },
-                    label = { Text("Keterangan", color = Color(0xFFA0AEC0)) },
+                    label = { Text("Keterangan", color = Color(0xFFA39D8F)) },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Notes,
                             contentDescription = null,
-                            tint = Color(0xFFA0AEC0),
+                            tint = Color(0xFFA39D8F),
                             modifier = Modifier.size(20.dp)
                         )
                     },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF818CF8),
-                        unfocusedBorderColor = Color(0xFF475569),
+                        focusedBorderColor = Color(0xFFC6A15B),
+                        unfocusedBorderColor = Color(0xFF524D42),
                         focusedContainerColor = Color(0xFF181B20),
                         unfocusedContainerColor = Color(0xFF181B20),
                         focusedTextColor = Color.White,
@@ -360,7 +359,7 @@ fun CatatTabunganDialog(
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color(0xFF94A3B8)
+                            color = Color(0xFF9C9587)
                         )
                     }
 
