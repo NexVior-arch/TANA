@@ -315,6 +315,40 @@ fun WeeklyExpenseSavingsChart(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            if (currentMode == "PREDICTIVE_SAVINGS" && savingsGoals.isEmpty()) {
+                // No real data to project from - show an honest empty state instead of
+                // rendering a chart built on a fabricated target/rate (previously this mode
+                // silently defaulted to a fake Rp 10.000.000 target with no basis in the
+                // user's actual data, which is misleading for a real savings app).
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.AutoAwesome,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Belum Ada Target Tabungan",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Buat target tabungan dulu supaya prediksi bisa dihitung dari data asli, bukan perkiraan.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                return@Column
+            }
+
             // Legend indicators
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -357,13 +391,13 @@ fun WeeklyExpenseSavingsChart(
                             modifier = Modifier
                                 .width(12.dp)
                                 .height(2.dp)
-                                .background(Color(0xFFFFD54F))
+                                .background(Color(0xFF9C9587))
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "Target (${FinanceViewModel.formatCompact(predictiveResult.targetAmount)})",
                             style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold),
-                            color = Color(0xFFFFD54F)
+                            color = Color(0xFF9C9587)
                         )
                     }
                 } else if (currentMode == "CUMULATIVE_AREA") {
@@ -388,7 +422,7 @@ fun WeeklyExpenseSavingsChart(
                                 .size(10.dp)
                                 .clip(CircleShape)
                                 .background(
-                                    Brush.linearGradient(listOf(AccentSavings, Color(0xFF0091EA)))
+                                    Brush.linearGradient(listOf(AccentSavings, Color(0xFFD4B876)))
                                 )
                         )
                         Spacer(modifier = Modifier.width(5.dp))
@@ -405,7 +439,7 @@ fun WeeklyExpenseSavingsChart(
                                 .size(10.dp)
                                 .clip(CircleShape)
                                 .background(
-                                    Brush.linearGradient(listOf(AccentExpense, Color(0xFFFF1744)))
+                                    Brush.linearGradient(listOf(AccentExpense, Color(0xFF8C4438)))
                                 )
                         )
                         Spacer(modifier = Modifier.width(5.dp))
@@ -613,7 +647,7 @@ fun WeeklyExpenseSavingsChart(
                             val targetRatio = ((targetAmount / maxVal) * animProgress.value).toFloat().coerceIn(0f, 1f)
                             val targetY = canvasHeight - (canvasHeight * targetRatio)
                             drawLine(
-                                color = Color(0xFFFFD54F).copy(alpha = 0.7f),
+                                color = Color(0xFF9C9587).copy(alpha = 0.7f),
                                 start = Offset(0f, targetY),
                                 end = Offset(canvasWidth, targetY),
                                 strokeWidth = 1.5.dp.toPx(),
@@ -718,7 +752,7 @@ fun WeeklyExpenseSavingsChart(
                                     isTargetMilestone -> {
                                         // Glowing Target Achievement Star Node
                                         drawCircle(
-                                            color = Color(0xFFFFD54F),
+                                            color = Color(0xFF9C9587),
                                             radius = if (isSelected) 7.dp.toPx() else 5.dp.toPx(),
                                             center = pt
                                         )
@@ -1264,7 +1298,7 @@ fun WeeklyExpenseSavingsChart(
                                     Icon(
                                         imageVector = Icons.Filled.Flag,
                                         contentDescription = null,
-                                        tint = Color(0xFFFFD54F),
+                                        tint = Color(0xFF9C9587),
                                         modifier = Modifier.size(11.dp)
                                     )
                                     Spacer(modifier = Modifier.width(4.dp))
@@ -1385,11 +1419,11 @@ fun CategoryBreakdownRingChart(
         else {
             val palette = listOf(
                 BrandPrimaryBright,
-                Color(0xFFFF5252),
-                Color(0xFF7C4DFF),
-                Color(0xFFFFD600),
-                Color(0xFF00E676),
-                Color(0xFFFF4081)
+                Color(0xFFB08D6B), // Muted terracotta-tan
+                Color(0xFF8A8579), // Warm taupe-gray
+                Color(0xFFA3956B), // Muted olive-gold
+                Color(0xFF7A9187), // Muted sage
+                Color(0xFF9C7F8A)  // Muted mauve
             )
             val grouped = filteredTx.groupBy { it.category }
                 .mapValues { it.value.sumOf { t -> t.amount } }
@@ -1417,7 +1451,7 @@ fun CategoryBreakdownRingChart(
                         category = "Lainnya",
                         amount = otherTotal,
                         percentage = (otherTotal / totalAmount).toFloat(),
-                        color = Color(0xFF78909C)
+                        color = Color(0xFF8C8578)
                     )
                 )
             }
@@ -1617,7 +1651,7 @@ fun FinancialDisciplineGauge(
     val gaugeColor = when {
         disciplineScore >= 80 -> AccentIncome
         disciplineScore >= 60 -> AccentSavings
-        disciplineScore >= 40 -> Color(0xFFFFB74D)
+        disciplineScore >= 40 -> Color(0xFFC4914F)
         else -> AccentExpense
     }
 
@@ -1692,7 +1726,7 @@ fun FinancialDisciplineGauge(
                     // Active Score Arc with Gradient
                     drawArc(
                         brush = Brush.sweepGradient(
-                            listOf(AccentExpense, Color(0xFFFFB74D), AccentSavings, AccentIncome)
+                            listOf(AccentExpense, Color(0xFFC4914F), AccentSavings, AccentIncome)
                         ),
                         startAngle = 135f,
                         sweepAngle = 270f * animatedProgress,
