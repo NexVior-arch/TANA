@@ -573,21 +573,26 @@ fun AiScreen(
                             contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
+                            // Compiled ONCE per composition lifetime (not per message, not per
+                            // recomposition) - previously these 10 Regex objects were rebuilt and
+                            // re-run for every visible chat message on every recomposition
+                            // (including every single keystroke in the input field below, since
+                            // inputText lives in the same composable scope), which is what caused
+                            // the chat screen to visibly flicker/stutter while typing.
+                            val tagRoutineRegex = remember { Regex("""\[PROPOSE_AGENT_ROUTINE(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""") }
+                            val tagStopRoutineRegex = remember { Regex("""\[STOP_AGENT_ROUTINE(_DONE|_CANCEL)?:\s*([^\]]+)\]""") }
+                            val tagGoalRegex = remember { Regex("""\[TARGET_NABUNG(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""") }
+                            val tagDeleteGoalRegex = remember { Regex("""\[HAPUS_NABUNG(_DONE|_CANCEL)?:\s*([^\]]+)\]""") }
+                            val tagUpdateGoalRegex = remember { Regex("""\[UPDATE_GOAL(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""") }
+                            val tagFixTxRegex = remember { Regex("""\[UBAH_TRANSAKSI_NABUNG(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)(?:\|\s*([^\]]+))?\]""") }
+                            val tagDepositRegex = remember { Regex("""\[SETOR_(?:TABUNGAN|NABUNG)(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)(?:\|\s*([^\]]+))?\]""") }
+                            val tagWithdrawRegex = remember { Regex("""\[TARIK_NABUNG(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)(?:\|\s*([^\]]+))?\]""") }
+                            val tagTransactionRegex = remember { Regex("""\[CATAT_TRANSAKSI(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""") }
+                            val tagAttachmentRegex = remember { Regex("""\[ATTACHMENT_URI:\s*([^\]]+)\]""") }
+
                             items(aiMessages, key = { it.id }) { msg ->
                             val rawContent = msg.content
                             val isUser = msg.role == "user"
-
-                            // Regex matching for AI Action Plans and Autonomous Routines
-                            val tagRoutineRegex = Regex("""\[PROPOSE_AGENT_ROUTINE(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""")
-                            val tagStopRoutineRegex = Regex("""\[STOP_AGENT_ROUTINE(_DONE|_CANCEL)?:\s*([^\]]+)\]""")
-                            val tagGoalRegex = Regex("""\[TARGET_NABUNG(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""")
-                            val tagDeleteGoalRegex = Regex("""\[HAPUS_NABUNG(_DONE|_CANCEL)?:\s*([^\]]+)\]""")
-                            val tagUpdateGoalRegex = Regex("""\[UPDATE_GOAL(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""")
-                            val tagFixTxRegex = Regex("""\[UBAH_TRANSAKSI_NABUNG(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)(?:\|\s*([^\]]+))?\]""")
-                            val tagDepositRegex = Regex("""\[SETOR_(?:TABUNGAN|NABUNG)(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)(?:\|\s*([^\]]+))?\]""")
-                            val tagWithdrawRegex = Regex("""\[TARIK_NABUNG(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)(?:\|\s*([^\]]+))?\]""")
-                            val tagTransactionRegex = Regex("""\[CATAT_TRANSAKSI(_DONE|_CANCEL)?:\s*([^|]+)\|\s*([^|]+)\|\s*([^|]+)\|\s*([^\]]+)\]""")
-                            val tagAttachmentRegex = Regex("""\[ATTACHMENT_URI:\s*([^\]]+)\]""")
 
                             val matchRoutine = tagRoutineRegex.find(rawContent)
                             val matchStopRoutine = tagStopRoutineRegex.find(rawContent)
@@ -2358,7 +2363,7 @@ fun buildInlineMarkdown(text: String, isUser: Boolean): AnnotatedString {
         val matches = pattern.findAll(text)
 
         val codeBg = if (isUser) Color.Black.copy(alpha = 0.25f) else Color(0xFF1E293B)
-        val codeFg = if (isUser) Color.White else Color(0xFF818CF8)
+        val codeFg = if (isUser) Color.White else Color(0xFFC6A15B)
 
         for (match in matches) {
             if (match.range.first > currentIndex) {
