@@ -16,11 +16,14 @@ import com.tana.reminder.ReminderScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -138,6 +141,13 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
     private val _telegramTestStatus = MutableStateFlow<String?>(null)
     val telegramTestStatus: StateFlow<String?> = _telegramTestStatus.asStateFlow()
 
+    // Flips to true once the first real emission from the core data flows arrives
+    // (not just the stateIn initialValue placeholder). MainActivity keeps the splash
+    // screen visible until this is true, so the app never dismisses the splash into
+    // a still-loading/empty screen.
+    private val _isInitialDataLoaded = MutableStateFlow(false)
+    val isInitialDataLoaded: StateFlow<Boolean> = _isInitialDataLoaded.asStateFlow()
+
     init {
         val db = AppDatabase.getInstance(application)
         repository = FinanceRepository(db)
@@ -171,6 +181,16 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
         com.tana.reminder.AgentAutonomousScheduler.createAgentNotificationChannel(application)
         com.tana.reminder.AgentAutonomousScheduler.executePendingRoutines(application)
         checkAndSeedSampleData()
+
+        // Mark initial load complete once the first real database emission for both
+        // core flows arrives (or after a short safety timeout, so a slow/empty
+        // database on a fresh install can never hold the splash screen forever).
+        viewModelScope.launch {
+            withTimeoutOrNull(1500L) {
+                combine(repository.allTransactions, repository.allSavingsGoals) { _, _ -> true }.first()
+            }
+            _isInitialDataLoaded.value = true
+        }
 
         // Continuous background ticker loop for real-time interval agent routines
         viewModelScope.launch(Dispatchers.IO) {
@@ -903,7 +923,13 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
                         onChunk = { token ->
                             streamedResponse.append(token)
                             val now = System.currentTimeMillis()
-                            if (now - lastUpdateTime > 80L || token.contains("\n") || token.contains(" ")) {
+                            // Throttled to 400ms: each write here triggers a full Room Flow
+                            // re-query + re-emit of the ENTIRE ai_messages list, which forces
+                            // the whole chat LazyColumn to recompose. Updating too often (this
+                            // used to be 80ms, ~12x/second) visibly flickered the screen while
+                            // the AI was responding. 400ms keeps the "typing" feel smooth without
+                            // hammering the database and UI tree that often.
+                            if (now - lastUpdateTime > 400L) {
                                 lastUpdateTime = now
                                 repository.updateAiMessageContent(assistantMsgId, streamedResponse.toString() + " ▋")
                             }
@@ -1564,11 +1590,12 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
             pastDaysOffsets.forEach { daysAgo ->
                 val timePoint = now - (daysAgo * 86400000L)
                 val txsUpToPoint = sortedRelevantTxs.filter { it.timestamp <= timePoint }
-                val historicalBalance = if (txsUpToPoint.isNotEmpty()) {
-                    txsUpToPoint.sumOf { it.amount }.coerceAtLeast(0.0)
-                } else {
-                    (currentAmount * (1.0 - (daysAgo / 35.0))).coerceAtLeast(0.0)
-                }
+                // Historical points must reflect REAL transaction data only, never a fabricated
+                // estimate. If there were no savings transactions yet at this point in time, the
+                // real balance at that point was 0 (or unknown) - it must not be invented via a
+                // decay formula, since that portion of the chart is presented to the user as
+                // actual history, not a projection.
+                val historicalBalance = txsUpToPoint.sumOf { it.amount }.coerceAtLeast(0.0)
                 points.add(
                     PredictivePoint(
                         dateLabel = shortDateFormat.format(Date(timePoint)),
